@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div class="navbar">
+      <h3><%= title %></h3>
+    </div>
+    <div class="wrapper">
+      <div class="box box-2">
+          <form id="form">
+            <div class="wrapper">
+                <div class="box-1">
+                    <label>Weight :</label>
+                    <input id="weight" type="number" min="0">
+                </div>
+            </div>
+            <div class="wrapper">
+                <div class="box-1">
+                    <label>Provider :</label>
+                    <select id="selectProvider">
+                      <% Object.keys(provider).forEach(function(item){ %>
+                        <option value="<%= provider[item].name %>">
+                            <%= provider[item].name %> - (<%= provider[item].price.toLocaleString() %> /kg)
+                        </option>
+                      <% }); %>
+                    </select>
+                </div>
+            </div>
+            <div class="wrapper">
+                <span id="msg" class="msg"></span>
+            </div>
+            <div class="wrapper">
+                <div class="box-1">
+                    <button type="button" id="submitButton">Submit</button>
+                </div>
+            </div>
+          </form>
+      </div>
+    </div>
+    <div class="wrapper">
+      <div class="box box-2">
+        <div class="output">
+          <label>Output :</label>
+          <p id="output"></p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+<script>
+  $('#submitButton').click(function(){
+      let self = $(this)
+      var data = {
+          weight : $('#weight').val(),
+          provider : $('#selectProvider').val()
+      }
+      let formUrl = '/api/calculate-shipping/' + data.weight + 
+                    '/' + data.provider
+      self.html('<i class="fas fa-spinner fa-spin"></i>')
+      $.ajax({
+          method : 'GET',
+          url : formUrl,
+          dataType: 'json'
+      }).done(function(result){
+          $('#output').html(result.data.toLocaleString());
+          self.html('Submit');
+      }).fail(function(jqXHR, textStatus, errorThrown){
+          alert(textStatus, errorThrown);
+      })
+  });
+</script>
